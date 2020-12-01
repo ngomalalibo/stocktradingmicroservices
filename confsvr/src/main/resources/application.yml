@@ -1,0 +1,12 @@
+server:
+  port: 8888
+spring:
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        encrypt:
+          enabled: false
+        native:
+          searchLocations: file:\Users\Ngo\Documents\IntelliJProjects\microservices\confsvr\src\main\resources\config\stockquote
