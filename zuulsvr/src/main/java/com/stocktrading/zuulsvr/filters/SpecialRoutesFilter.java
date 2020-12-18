@@ -209,7 +209,6 @@ public class SpecialRoutesFilter extends ZuulFilter
     @Override
     public Object run()
     {
-        System.out.println("*************** Processing special routes filter ***************");
         RequestContext ctx = RequestContext.getCurrentContext();
         
         

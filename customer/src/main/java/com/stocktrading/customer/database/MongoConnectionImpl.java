@@ -29,6 +29,7 @@ import java.util.Map;
 
 @Slf4j
 @Getter
+@Component
 public class MongoConnectionImpl extends DatabaseConnection implements CollectionEntityMapping
 {
     public <T extends PersistingBaseEntity> MongoCollection getPersistingCollectionFromClass(T t)
@@ -80,7 +81,7 @@ public class MongoConnectionImpl extends DatabaseConnection implements Collectio
             mongo = MongoClients.create(settings);
             db = mongo.getDatabase(DBNAME);
             //createAllCollections();
-            getDBStats();
+            //getDBStats();
         }
         
         activityLog = db.getCollection(DB_ACTIVITYLOG, ActivityLog.class).withCodecRegistry(pojoCodecRegistry);

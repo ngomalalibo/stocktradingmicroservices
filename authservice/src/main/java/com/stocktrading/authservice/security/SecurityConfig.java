@@ -46,11 +46,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         return super.authenticationManagerBean();
     }
     
-    @Bean
+    /*@Bean
     public TokenStore tokenStore()
     {
         return new InMemoryTokenStore();
-    }
+    }*/
     
     /*@Primary
     @Bean

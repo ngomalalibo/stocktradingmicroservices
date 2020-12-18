@@ -1,0 +1,9 @@
+Setting up microservices.
+1. Start config server
+2. Start eureka server.
+3. Start Zull server
+4. Start microserices
+5. Start zookeeper with command zkserver
+6. Start kafka with command at kafka directory: .\bin\windows\kafka-server-start.bat .\config\server.properties
+7. Start Redis by clicking on redis-server.exe in redis folder C:\Redis-x64-3.2.100
+8. start zipkin server via gitbach at zipkin directory. microservices/zipkin: java -jar ./zipkin-server/target/zipkin-server-*exec.jar

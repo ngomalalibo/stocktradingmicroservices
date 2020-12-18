@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bson.conversions.Bson;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.PrePersist;
@@ -67,6 +67,7 @@ public class PersistingBaseEntity implements Serializable, Persistable, Cloneabl
     
     @BsonIgnore
     @JsonIgnore
+    @Autowired
     private MongoConnectionImpl database;
     
     public PersistingBaseEntity()

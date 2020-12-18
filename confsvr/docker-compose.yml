@@ -1,0 +1,104 @@
+version: '2'
+services:
+  eurekaserver:
+    image:   eurekaserver
+    mem_limit: "1073741824"
+    ports:
+      - "8761:8761"
+    depends_on:
+      confserver:
+        condition: service_started
+
+  confserver:
+    image: confserver
+    #mem_limit: 1073741824
+    mem_limit: "1000000000"
+    ports:
+      - "8888:8888"
+    environment:
+      ENCRYPT_KEY: "IMSYMMETRIC"
+
+  zuulserver:
+    image: zuulserver
+    mem_limit: "1073741824"
+    ports:
+      - "5555:5555"
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+
+  stockquote:
+    image: stockquote
+    mem_limit: "1073741824"
+    ports:
+      - "8085:8085"
+    depends_on:
+      authservice:
+        condition: service_started
+      confserver:
+        condition: service_started
+      zuulserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+      customer:
+        condition: service_started
+      kafkaserver:
+        condition: service_started
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+
+  authservice:
+    image: authservice
+    mem_limit: "1073741824"
+    ports:
+      - "8901:8901"
+    depends_on:
+      confserver:
+        condition: service_started
+      zuulserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+
+  customer:
+    image: customer
+    mem_limit: "1073741824"
+    ports:
+      - "8081:8081"
+    depends_on:
+      authservice:
+        condition: service_started
+      confserver:
+        condition: service_started
+      zuulserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+      kafkaserver:
+        condition: service_started
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+
+  kafkaserver:
+    image: spotify/kafka
+    mem_limit: "1073741824"
+    ports:
+      - 2181:2181
+      - 9092:9092
+
+  zipkinserver:
+    image: openzipkin/zipkin
+    mem_limit: "1073741824"
+    ports:
+      - 9411:9411
+
+  redisserver:
+    image: redis:rc-alpine
+    mem_limit: "1073741824"
+    ports:
+      - 6379:6379

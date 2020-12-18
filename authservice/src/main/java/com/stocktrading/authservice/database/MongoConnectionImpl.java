@@ -79,7 +79,7 @@ public class MongoConnectionImpl extends DatabaseConnection implements Collectio
             mongo = MongoClients.create(settings);
             db = mongo.getDatabase(DBNAME);
             //createAllCollections();
-            getDBStats();
+            //getDBStats();
         }
         
         activityLog = db.getCollection(DB_ACTIVITYLOG, ActivityLog.class).withCodecRegistry(pojoCodecRegistry);

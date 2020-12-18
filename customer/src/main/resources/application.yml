@@ -1,3 +1,26 @@
+spring:
+  sleuth:
+    sampler:
+      probability: 1.0
+  zipkin:
+    base-url: http://localhost:9411
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination:  clientChangeTopic
+          content-type: application/json
+#      kafka:
+#        binder:
+#          zkNodes: localhost
+#          brokers: localhost
+#Setting the logging levels for the service
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.thoughtmechanix: DEBUG
+
 eureka:
   instance:
     preferIpAddress: true

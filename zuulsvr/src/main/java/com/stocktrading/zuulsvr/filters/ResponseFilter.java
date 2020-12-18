@@ -1,5 +1,6 @@
 package com.stocktrading.zuulsvr.filters;
 
+import brave.Tracer;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import org.slf4j.Logger;
@@ -10,45 +11,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResponseFilter extends ZuulFilter
 {
-    private static final int FILTER_ORDER = 1;
-    private static final boolean SHOULD_FILTER = true;
+    private static final int  FILTER_ORDER=1;
+    private static final boolean  SHOULD_FILTER=true;
     private static final Logger logger = LoggerFactory.getLogger(ResponseFilter.class);
-    
+
+
     @Autowired
-    FilterUtils filterUtils;
-    
+    Tracer tracer;
+
     @Override
-    public String filterType()
-    {
-        return FilterUtils.POST_FILTER_TYPE;
+    public String filterType() {
+        return "post";
     }
-    
+
     @Override
-    public int filterOrder()
-    {
+    public int filterOrder() {
         return FILTER_ORDER;
     }
-    
+
     @Override
-    public boolean shouldFilter()
-    {
+    public boolean shouldFilter() {
         return SHOULD_FILTER;
     }
-    
+
     @Override
-    public Object run()
-    {
-        System.out.println("*************** Processing response filter ***************");
+    public Object run() {
         RequestContext ctx = RequestContext.getCurrentContext();
-        
-        logger.debug("Adding the correlation id to the outbound headers. {}", filterUtils.getCorrelationId());
-        ctx.getResponse().addHeader(FilterUtils.CORRELATION_ID, filterUtils.getCorrelationId());
-        
-        logger.debug("Adding the token to the outbound headers. {}", filterUtils.getAuthToken());
-        ctx.getResponse().addHeader(FilterUtils.AUTH_TOKEN, filterUtils.getAuthToken());
-        
-        logger.debug("Completing outgoing request for {}.", ctx.getRequest().getRequestURI());
-        
+        ctx.getResponse().addHeader("tmx-correlation-id", tracer.currentSpan().context().traceIdString());
+
         return null;
     }
 }

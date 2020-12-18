@@ -9,4 +9,7 @@ spring:
         encrypt:
           enabled: false
         native:
-          searchLocations: file:\Users\Ngo\Documents\IntelliJProjects\microservices\confsvr\src\main\resources\config\stockquote
+          searchLocations: file:\Users\Ngo\Documents\IntelliJProjects\microservices\confsvr\src\main\resources\config
+
+encrypt:
+  key: IMSYMMETRIC

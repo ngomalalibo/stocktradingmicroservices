@@ -42,6 +42,8 @@ public class StockPriceController
     @Autowired
     OAuth2CustomerRestTemplateClient oAuth2CustomerRestTemplateClient;
     
+    
+    
     String id = "CLI-cd988e7e-b575-4a01-b970-5742e8fec9cc";
     
     @GetMapping("/stockprice/{companyname}")
@@ -55,7 +57,6 @@ public class StockPriceController
         
         if (stockQuote != null)
         {
-    
             Client restTemplateCustomer = customerRestTemplateClient.getCustomer(id);
             System.out.println("restTemplateCustomer = " + restTemplateCustomer.getFirstName());
     

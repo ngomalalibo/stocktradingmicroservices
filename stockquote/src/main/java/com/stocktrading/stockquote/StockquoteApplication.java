@@ -1,7 +1,15 @@
 package com.stocktrading.stockquote;
 
+import brave.sampler.Sampler;
+import com.stocktrading.stockquote.config.ServiceConfig;
 import com.stocktrading.stockquote.database.MongoConnectionImpl;
+import com.stocktrading.stockquote.entity.Client;
+import com.stocktrading.stockquote.entity.ClientChangeModel;
+import com.stocktrading.stockquote.event.CustomChannels;
+import com.stocktrading.stockquote.repository.ClientRedisRepository;
 import com.stocktrading.stockquote.util.UserContextInterceptor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,7 +18,11 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
@@ -25,9 +37,57 @@ import java.util.List;
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableCircuitBreaker
+@EnableBinding(CustomChannels.class)
+@Slf4j
 public class StockquoteApplication extends SpringBootServletInitializer
 {
+    @Autowired
+    private ServiceConfig serviceConfig;
+    
+    @Autowired
+    ClientRedisRepository clientRedisRepository;
+    
     private MongoConnectionImpl database = new MongoConnectionImpl();
+    
+    @StreamListener("inboundCustomerChanges")
+    public void loggerSink(ClientChangeModel clientChangeModel)
+    {
+        log.debug("Received an event for client id {}", clientChangeModel.getClientId());
+        // TODO > implement consumption of customer update from message queue
+        
+        switch (clientChangeModel.getAction())
+        {
+            case "READ":
+                log.info("Received a READ event from the customer service for customer id {}", clientChangeModel.getClientId());
+                break;
+            case "SAVE":
+                log.info("Received a SAVE event from the customer service for customer id {}", clientChangeModel.getClientId());
+                break;
+            case "UPDATE":
+                log.info("Received a UPDATE event from the customer service for customer id {}", clientChangeModel.getClientId());
+                clientRedisRepository.deleteClient(clientChangeModel.getClientId());
+                break;
+            case "DELETE":
+                log.info("Received a DELETE event from the customer service for customer id {}", clientChangeModel.getClientId());
+                clientRedisRepository.deleteClient(clientChangeModel.getClientId());
+                break;
+            default:
+                log.error("Received an UNKNOWN event from the customer service of type {}", clientChangeModel.getType());
+                break;
+            
+        }
+    }
+    
+    @Bean
+    public RedisTemplate<String, Client> redisTemplate()
+    {
+        RedisTemplate<String, Client> template = new RedisTemplate<String, Client>();
+        JedisConnectionFactory jedisConnFactory = new JedisConnectionFactory();
+        jedisConnFactory.setHostName("localhost");
+        jedisConnFactory.setPort(6379);
+        template.setConnectionFactory(jedisConnFactory);
+        return template;
+    }
     
     @Override
     protected SpringApplicationBuilder configure(
@@ -86,4 +146,6 @@ public class StockquoteApplication extends SpringBootServletInitializer
     {
         return new OAuth2RestTemplate(details, oauth2ClientContext);
     }
+    
+    
 }

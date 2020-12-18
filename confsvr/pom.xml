@@ -15,6 +15,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.3.5.RELEASE</version>
+        <relativePath/>
     </parent>
     <dependencyManagement>
         <dependencies>
@@ -22,7 +23,6 @@
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
                 <version>Hoxton.SR9</version>
-                <!--                <version>2020.0.0-SNAPSHOT</version>-->
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -41,60 +41,146 @@
         </dependency>
     </dependencies>
 
-    <!--Docker build Config-->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <start-class>com.stocktrading.stockquote.StockquoteApplication</start-class>
         <java.version>1.8</java.version>
-        <!--        <docker.image.name>johncarnell/tmx-confsvr</docker.image.name>-->
-        <!--        <docker.image.tag>chapter3</docker.image.tag>-->
+        <start-class>com.stocktrading.ConfigServerApplication</start-class>
+        <!--Docker build Config-->
+        <docker.image.name>${project.name}</docker.image.name>
+        <docker.image.tag>latest</docker.image.tag>
     </properties>
 
     <build>
+        <finalName>confserver</finalName>
         <plugins>
-            <!-- We use the Resources plugin to filer Dockerfile and run.sh, it inserts actual JAR filename -->
-            <!-- The final Dockerfile will be created in target/dockerfile/Dockerfile -->
-            <!--<plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        &lt;!&ndash; here the phase you need &ndash;&gt;
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/dockerfile</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/docker</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
-            <!--<plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>0.4.10</version>
-                <configuration>
-                    <imageName>${docker.image.name}:${docker.image.tag}</imageName>
-                    <dockerDirectory>${basedir}/target/dockerfile</dockerDirectory>
-                    <resources>
-                        <resource>
-                            <targetPath>/</targetPath>
-                            <directory>${project.build.directory}</directory>
-                            <include>${project.build.finalName}.jar</include>
-                        </resource>
-                    </resources>
-                </configuration>
-            </plugin>-->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <!-- Remove existing image from local repo. Unnecessary. Image build command overwrites-->
+                    <!--<execution>
+                        <id>docker-clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>stop</argument>
+                                <argument>confserver</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>-->
+                    <!--
+                      Create new docker image using Dockerfile which must be present in current working directory.
+                      Tag the image using maven project version information.
+                    -->
+                    <execution>
+                        <id>docker-build</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>build</argument>
+                                <!--                                <argument>&#45;&#45;rm</argument>-->
+                                <argument>-t</argument>
+                                <argument>confserver:latest</argument>
+                                <argument>.</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <!--Tag image-->
+                    <execution>
+                        <id>docker-tag</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>tag</argument>
+                                <argument>confserver</argument>
+                                <argument>ngomalalibo/confserver:latest</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+
+                    <!--docker run -rm -name myconfig -p 8888:8888 -it confserver-->
+                    <!--<execution>
+                        <id>docker-run</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>&#45;&#45;rm</argument>
+                                <argument>&#45;&#45;name</argument>
+                                <argument>confserver</argument>
+                                <argument>-p</argument>
+                                <argument>8888:8888</argument>
+                                <argument>-t</argument>
+                                <argument>confserver</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>-->
+
+
+                    <!-- Login and Push the image to a docker repo. -->
+                    <execution>
+                        <id>docker-login</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>login</argument>
+                                <argument>-u</argument>
+                                <argument>ngomalalibo</argument>
+                                <argument>-p</argument>
+                                <argument>Mart1nala_</argument>
+                                <argument>https://hub.docker.com/</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>docker-push</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>docker</executable>
+                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <arguments>
+                                <argument>push</argument>
+                                <argument>ngomalalibo/confserver</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

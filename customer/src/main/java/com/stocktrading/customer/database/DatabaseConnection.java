@@ -17,9 +17,9 @@ public abstract class DatabaseConnection
 {
     
     protected final String DBNAME = "stocks";
-    protected static final String DB_ORGANIZATION = "Stock Trading Inc.";
-    protected static final String DB_ACTIVITYLOG = "activitylogs";
-    protected static final String DB_CLIENT = "clients";
+    public static final String DB_ORGANIZATION = "Stock Trading Inc.";
+    public static final String DB_ACTIVITYLOG = "activitylogs";
+    public static final String DB_CLIENT = "clients";
     
     protected String DBSTR = System.getenv().get("MONGODB_DATABASE_STOCKS_ATLAS");
     

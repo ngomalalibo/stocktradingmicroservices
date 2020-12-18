@@ -22,13 +22,14 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.glassfish.jersey.internal.guava.Iterators;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 @Slf4j
 @Getter
-public class MongoConnectionImpl extends DatabaseConnection implements CollectionEntityMapping
+public class MongoConnectionImpl extends DatabaseConnection implements CollectionEntityMapping, Serializable
 {
     
     public <T extends PersistingBaseEntity> MongoCollection getPersistingCollectionFromClass(T t)
@@ -80,7 +81,7 @@ public class MongoConnectionImpl extends DatabaseConnection implements Collectio
             mongo = MongoClients.create(settings);
             db = mongo.getDatabase(DBNAME);
             //createAllCollections();
-            getDBStats();
+            //getDBStats();
         }
         
         activityLog = db.getCollection(DB_ACTIVITYLOG, ActivityLog.class).withCodecRegistry(pojoCodecRegistry);

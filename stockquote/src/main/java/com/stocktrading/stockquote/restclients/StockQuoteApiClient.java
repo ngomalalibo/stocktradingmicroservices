@@ -28,7 +28,7 @@ import java.util.Random;
 @Data
 @Slf4j
 @Service
-@DefaultProperties(commandProperties = {@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "10000")})
+@DefaultProperties(commandProperties = {@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "12000")})
 public class StockQuoteApiClient
 {
     private static Client client;
