@@ -1,37 +1,45 @@
 spring:
-  zipkin:
-    base-url: http://localhost:9411
   cloud:
+    loadbalancer:
+      ribbon:
+        enabled: true
     stream:
       bindings:
-        inboundCustomerChanges:
+        input:
           destination: clientChangeTopic
           content-type: application/json
           group: stockGroup
+      kafka:
+        binder:
+          zkNodes: zookeeper
+          brokers: kafkaserver
+  zipkin:
+    base-url: ${ZIPKIN_URI}
   sleuth:
     sampler:
       probability: 1.0
 
 eureka:
   instance:
-    preferIpAddress: true
+    prefer-ip-address: true
   client:
-    fetchRegistry: true
-    registerWithEureka: true
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: ${EUREKA_URI}
 
 server:
   port: 8085
 
 security:
   oauth2:
-    resource:
-      user-info-uri: http://localhost:8901/user
+    authorization:
+      check-token-access: isAuthenticated()
     client:
-      client-id: stockquote
+      client-id: stocktrading
       client-secret: thisissecret
-      grant-type: password
+    resource:
+      user-info-uri: ${AUTH_URI}
 
 signing:
   key: 345345fsdgsf5345

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class ServiceConfig
 {
     @Value("${signing.key}")
-    private String jwtSigningKey = "";
+    private String jwtSigningKey = "345345fsdgsf5345";
     
     
     public String getJwtSigningKey()

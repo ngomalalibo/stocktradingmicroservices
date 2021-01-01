@@ -29,7 +29,6 @@
         <module>customer</module>
         <module>zuulsvr</module>
         <module>authservice</module>
-<!--        <module>zipkin-server</module>-->
 
     </modules>
 

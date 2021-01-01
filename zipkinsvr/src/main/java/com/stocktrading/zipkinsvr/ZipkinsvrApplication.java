@@ -13,4 +13,5 @@ public class ZipkinsvrApplication
     {
         SpringApplication.run(ZipkinsvrApplication.class, args);
     }
+    
 }

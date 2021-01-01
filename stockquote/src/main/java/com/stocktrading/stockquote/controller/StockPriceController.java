@@ -50,7 +50,6 @@ public class StockPriceController
     public ResponseEntity<Object> checkStockPrice(@PathVariable(name = "companyname") String companyname)
     {
         logger.info("StockQuote CorrelationID: {}", UserContextHolder.getContext().getCorrelationId());
-        
         Map<String, Object> request = new HashMap<>();
         request.put("companyname", companyname);
         StockQuote stockQuote = (StockQuote) services.service(request);
@@ -59,10 +58,8 @@ public class StockPriceController
         {
             Client restTemplateCustomer = customerRestTemplateClient.getCustomer(id);
             System.out.println("restTemplateCustomer = " + restTemplateCustomer.getFirstName());
-    
             Client restOauthTemplateCustomer = oAuth2CustomerRestTemplateClient.getCustomer(id);
             System.out.println("oAuth2CustomerRestTemplateClient = " + restOauthTemplateCustomer.getFirstName());
-            
             
             /*Client discoveryCustomer = customerDiscoveryClient.getCustomer(id); // Discovery option
             Client feignCustomer = customerFeignClient.getCustomer(id); // Feign Client option

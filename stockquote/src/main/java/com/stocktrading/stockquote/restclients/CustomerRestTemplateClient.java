@@ -10,6 +10,7 @@ import com.stocktrading.stockquote.util.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,9 @@ public class CustomerRestTemplateClient
     @Autowired
     Tracer tracer;
     
+    @Value("${zuul.uri}")
+    private String ZUUL_URI;
+    
     @HystrixCommand(commandProperties = {@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "12000")})
     @LoadBalanced
     public Client getCustomer(String clientId)
@@ -52,7 +56,7 @@ public class CustomerRestTemplateClient
         
         ResponseEntity<Client> restExchange =
                 restTemplate.exchange(
-                        "http://localhost:5555/cust/client/{id}",
+                        ZUUL_URI + "/cust/client/{id}",
                         HttpMethod.GET,
                         null, Client.class, clientId);
         

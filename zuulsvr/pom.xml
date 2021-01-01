@@ -16,11 +16,15 @@
     <description>Zuul Server</description>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-cloud.version>Hoxton.SR9</spring-cloud.version>
         <maven.test.skip>true</maven.test.skip>
+
+        <start-class>com.stocktrading.zuulsvr.ZuulsvrApplication</start-class>
+        <docker.image.name>ngomalalibo/${project.name}</docker.image.name>
+        <docker.image.tag>latest</docker.image.tag>
     </properties>
 
     <dependencyManagement>
@@ -50,19 +54,10 @@
             <version>2.1.2.RELEASE</version>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security.oauth</groupId>
-            <artifactId>spring-security-oauth2</artifactId>
-            <version>2.5.0.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-security</artifactId>
-        </dependency>
-        <!--<dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
@@ -83,9 +78,14 @@
             <!--            <scope>test</scope>-->
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <version>1.4.7.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -117,19 +117,8 @@
         <!--Aadded-->
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-            <version>3.11.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.12.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>bson</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>3.12.7</version>
         </dependency>
         <dependency>
             <groupId>de.undercouch</groupId>
@@ -140,11 +129,6 @@
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-jwt</artifactId>
-            <version>1.1.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -219,7 +203,7 @@
                             <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
                                 <argument>build</argument>
-                                <!--                                <argument>&#45;&#45;rm</argument>-->
+                                <argument>--rm</argument>
                                 <argument>-t</argument>
                                 <argument>zuulserver:latest</argument>
                                 <argument>.</argument>

@@ -16,10 +16,16 @@
     <description>Authentication Service</description>
 
     <properties>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!--        <spring-cloud.version>Hoxton.SR9</spring-cloud.version>-->
         <spring-cloud.version>2020.0.0-SNAPSHOT</spring-cloud.version>
+        <maven.test.skip>true</maven.test.skip>
+
+        <docker.image.name>ngomalalibo/${project.name}</docker.image.name>
+        <start-class>com.stocktrading.authservice.AuthserviceApplication</start-class>
+        <docker.image.tag>latest</docker.image.tag>
     </properties>
 
     <dependencies>
@@ -29,15 +35,6 @@
             <groupId>org.springframework.security.oauth.boot</groupId>
             <artifactId>spring-security-oauth2-autoconfigure</artifactId>
             <version>2.1.2.RELEASE</version>
-        </dependency>
-        <!--<dependency>
-            <groupId>org.springframework.security.oauth</groupId>
-            <artifactId>spring-security-oauth2</artifactId>
-            <version>2.5.0.RELEASE</version>
-        </dependency>-->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-security</artifactId>
         </dependency>
 
         <dependency>
@@ -59,19 +56,8 @@
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
-            <artifactId>bson</artifactId>
-            <version>3.11.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>3.12.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>bson</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>3.12.7</version>
         </dependency>
         <dependency>
             <groupId>de.undercouch</groupId>
@@ -140,7 +126,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <!--            <scope>test</scope>-->
         </dependency>
 
         <dependency>
@@ -171,6 +157,11 @@
             <version>3.1.0</version>
             <scope>provided</scope>
             <!--            <scope>compile</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-jwt</artifactId>
+            <version>1.1.1.RELEASE</version>
         </dependency>
     </dependencies>
 
@@ -213,7 +204,7 @@
                             <workingDirectory>${project.basedir}</workingDirectory>
                             <arguments>
                                 <argument>build</argument>
-                                <!--                                <argument>&#45;&#45;rm</argument>-->
+                                <argument>--rm</argument>
                                 <argument>-t</argument>
                                 <argument>authservice:latest</argument>
                                 <argument>.</argument>
@@ -278,6 +269,12 @@
             </plugin>
         </plugins>
     </build>
+    <!--<profiles>
+        <profile>
+            <id>docker</id>
+
+        </profile>
+    </profiles>-->
 
     <repositories>
         <repository>

@@ -5,6 +5,7 @@ import com.stocktrading.stockquote.util.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
@@ -18,6 +19,9 @@ public class OAuth2CustomerRestTemplateClient
     @Autowired
     OAuth2RestTemplate restTemplate;
     
+    @Value("${zuul.uri}")
+    private String ZUUL_URI;
+    
     @Autowired
     private UserContext userContext;
     
@@ -27,7 +31,7 @@ public class OAuth2CustomerRestTemplateClient
         
         ResponseEntity<Client> restExchange =
                 restTemplate.exchange(
-                        "http://localhost:5555/cust/client/{id}",
+                        ZUUL_URI+"/cust/client/{id}",
                         HttpMethod.GET,
                         null, Client.class, id);
         

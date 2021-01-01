@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import java.util.Arrays;
 
 @Configuration
+@EnableAuthorizationServer
 public class JWTOAuth2Config extends AuthorizationServerConfigurerAdapter
 {
     
@@ -70,7 +72,7 @@ public class JWTOAuth2Config extends AuthorizationServerConfigurerAdapter
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception
     {
         security.passwordEncoder(new BCryptPasswordEncoder(11))
-                .checkTokenAccess("permitAll()")
+                .checkTokenAccess("isAuthenticated()")
                 .tokenKeyAccess("permitAll()");
     }
 }

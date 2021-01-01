@@ -1,11 +1,9 @@
 package com.stocktrading.stockquote;
 
-import brave.sampler.Sampler;
 import com.stocktrading.stockquote.config.ServiceConfig;
 import com.stocktrading.stockquote.database.MongoConnectionImpl;
 import com.stocktrading.stockquote.entity.Client;
 import com.stocktrading.stockquote.entity.ClientChangeModel;
-import com.stocktrading.stockquote.event.CustomChannels;
 import com.stocktrading.stockquote.repository.ClientRedisRepository;
 import com.stocktrading.stockquote.util.UserContextInterceptor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +18,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -37,8 +36,8 @@ import java.util.List;
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableCircuitBreaker
-@EnableBinding(CustomChannels.class)
 @Slf4j
+@EnableBinding(Sink.class)
 public class StockquoteApplication extends SpringBootServletInitializer
 {
     @Autowired
@@ -49,7 +48,7 @@ public class StockquoteApplication extends SpringBootServletInitializer
     
     private MongoConnectionImpl database = new MongoConnectionImpl();
     
-    @StreamListener("inboundCustomerChanges")
+    @StreamListener(Sink.INPUT)
     public void loggerSink(ClientChangeModel clientChangeModel)
     {
         log.debug("Received an event for client id {}", clientChangeModel.getClientId());
@@ -78,16 +77,6 @@ public class StockquoteApplication extends SpringBootServletInitializer
         }
     }
     
-    @Bean
-    public RedisTemplate<String, Client> redisTemplate()
-    {
-        RedisTemplate<String, Client> template = new RedisTemplate<String, Client>();
-        JedisConnectionFactory jedisConnFactory = new JedisConnectionFactory();
-        jedisConnFactory.setHostName("localhost");
-        jedisConnFactory.setPort(6379);
-        template.setConnectionFactory(jedisConnFactory);
-        return template;
-    }
     
     @Override
     protected SpringApplicationBuilder configure(
@@ -147,5 +136,15 @@ public class StockquoteApplication extends SpringBootServletInitializer
         return new OAuth2RestTemplate(details, oauth2ClientContext);
     }
     
+    @Bean
+    public RedisTemplate<String, Client> redisTemplate()
+    {
+        RedisTemplate<String, Client> template = new RedisTemplate<String, Client>();
+        JedisConnectionFactory jedisConnFactory = new JedisConnectionFactory();
+        jedisConnFactory.setHostName(serviceConfig.getRedisServer());
+        jedisConnFactory.setPort(serviceConfig.getRedisPort());
+        template.setConnectionFactory(jedisConnFactory);
+        return template;
+    }
     
 }

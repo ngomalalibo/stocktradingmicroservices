@@ -1,17 +1,16 @@
 package com.stocktrading.customer;
 
+import com.fasterxml.jackson.databind.util.ClassUtil;
 import com.stocktrading.customer.database.MongoConnectionImpl;
-import com.stocktrading.customer.util.UserContextFilter;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.context.annotation.Bean;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.servlet.Filter;
 
 @SpringBootApplication
 // @RefreshScope

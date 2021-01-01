@@ -31,12 +31,12 @@ public class CustomerDiscoveryClient
     {
         // TODO > Check if request header has token and validate it against authserver
         List<ServiceInstance> instances =
-                discoveryClient.getInstances("authserver");
+                discoveryClient.getInstances("authservice");
         if (instances.size() == 0)
         {
             return null;
         }
-        String serviceUri = String.format("http://localhost:5555/authserver/currentuser");
+        String serviceUri = String.format("http://zuulserver:5555/authservice/currentuser");
         ResponseEntity<Client> restExchange = restTemplate.exchange(serviceUri, HttpMethod.GET, null, Client.class, id);
         
         

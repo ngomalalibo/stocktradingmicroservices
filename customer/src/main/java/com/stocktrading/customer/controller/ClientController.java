@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,7 +29,7 @@ public class ClientController
     @GetMapping("/client/{id}")
     public ResponseEntity<Object> getClient(@PathVariable String id)
     {
-        return ResponseEntity.ok(clientService.getClient(id));
+        return ResponseEntity.ok(clientService. getClient(id));
     }
     
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -59,12 +58,13 @@ public class ClientController
             
             if (client != null)
             {
-                System.out.println("Client dummy deleted>>>>>>>>>>");
+                System.out.println("Client dummy deleted>>>>>>>>>>");/** @DeleteMapping endpoint deletes data even with dummy method block */
                 Client client1 = clientService.getClient(id);
-                if(client1!=null)
+                if (client1 != null)
                 {
                     return ResponseEntity.ok(clientService.deleteClient(client1));
                 }
+                
                 /*boolean delete = client.delete(MongoConnectionImpl.DB_CLIENT, client);
                 if (delete)
                 {

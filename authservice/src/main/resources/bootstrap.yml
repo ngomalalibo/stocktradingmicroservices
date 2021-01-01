@@ -1,12 +1,12 @@
 spring:
   application:
-    name: authserver
+    name: authservice
   profiles:
     active:
       default
   cloud:
     config:
-      uri: http://localhost:8888
+      uri: ${CONF_URI}
       enabled: true
 encrypt:
   key: IMSYMMETRIC

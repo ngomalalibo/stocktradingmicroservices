@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: confserver
+  profiles:
+    active:
+      native
+  cloud:
+    config:
+      uri: ${CONF_URI}
+      enabled: true
+encrypt:
+  key: IMSYMMETRIC

@@ -3,17 +3,21 @@ spring:
     sampler:
       probability: 1.0
   zipkin:
-    base-url: http://localhost:9411
+    base-url: ${ZIPKIN_URI}
   cloud:
+    loadbalancer:
+      ribbon:
+        enabled: true
     stream:
       bindings:
         output:
-          destination:  clientChangeTopic
+          destination: clientChangeTopic
           content-type: application/json
-#      kafka:
-#        binder:
-#          zkNodes: localhost
-#          brokers: localhost
+      kafka:
+        binder:
+          zkNodes: zookeeper
+          brokers: kafkaserver
+
 #Setting the logging levels for the service
 logging:
   level:
@@ -23,15 +27,18 @@ logging:
 
 eureka:
   instance:
-    preferIpAddress: true
+    prefer-ip-address: true
   client:
-    registerWithEureka: true
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_URI}
 server:
   port: 8081
+
 security:
   oauth2:
+    authorization:
+      check-token-access: isAuthenticated()
     resource:
-      user-info-uri: http://localhost:8901/user
+      user-info-uri: ${AUTH_URI}

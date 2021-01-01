@@ -3,10 +3,10 @@ package com.stocktrading.customer.event;
 import com.stocktrading.customer.entity.ClientChangeModel;
 import com.stocktrading.customer.util.UserContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.messaging.MessageChannel;
+import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
@@ -14,21 +14,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class SimpleSourceBean
 {
-    @Qualifier("output")
     @Autowired
-    MessageChannel messageChannel;
-    
-    private Source source;
+    Source output;
     
     @Autowired
     UserContext userContext;
     
-    
-    @Autowired
-    public SimpleSourceBean(Source source)
-    {
-        this.source = source;
-    }
     
     public void publicClientChange(String action, String clientId)
     {
@@ -39,7 +30,15 @@ public class SimpleSourceBean
                 clientId,
                 userContext.getCorrelationId());
         
-        this.source.output().send(MessageBuilder.withPayload(change).build());
-        messageChannel.send(MessageBuilder.withPayload(change).build());
+        // source.output().send(MessageBuilder.withPayload(change).build());
+        output.output().send(MessageBuilder.withPayload(change).build());
+        // kafkaTemplate.send("clientChangeTopic", change);
+        log.info("{} kafka message sent for client Id: {}", action, clientId);
+    }
+    
+    @Bean
+    public void newTopic()
+    {
+        new NewTopic("clientChangeTopic", 3, (short) 1);
     }
 }
