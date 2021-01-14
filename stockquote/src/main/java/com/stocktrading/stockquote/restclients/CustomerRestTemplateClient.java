@@ -53,7 +53,7 @@ public class CustomerRestTemplateClient
         }
         
         log.info("Unable to locate client from the redis cache: {}.", clientId);
-        
+        log.info("ZUUL_URI------------> " + ZUUL_URI);
         ResponseEntity<Client> restExchange =
                 restTemplate.exchange(
                         ZUUL_URI + "/cust/client/{id}",

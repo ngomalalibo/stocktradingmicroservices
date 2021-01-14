@@ -1,0 +1,49 @@
+language: java
+jdk:
+  - openjdk:16-jdk-alpine
+cache:
+  directories:
+    - "$HOME/.m2"
+sudo: required
+services:
+  - docker
+notifications:
+  email:
+    - ngomalalibo@gmail.com
+  on_success: always
+  on_failure: always
+deploy:
+    provider: codedeploy
+    wait-until-deployed: true
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key:
+      secure: $AWS_SECRET_KEY
+    application: microservice
+    deployment_group: microservice_dev
+    region: eu-central-1
+    on:
+      branch: master
+branches:
+  only:
+    - master
+env:
+  global:
+before_install:
+  - mvn clean install
+  - sudo apt-get update
+  - sudo apt-get install -o Dpkg::Options::="--force-confold" --force-yes -y docker-engine
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+#  - docker-compose --version
+#  - docker-compose up -d
+#  - docker-compose ps -a
+  - gem install travis
+  - export BUILD_NAME=microservice-master-$(date -u "+%Y%m%d%H%M%S")
+  - export CONTAINER_IP=54.215.193.139
+script:
+  - sh travis_scripts/tag_build.sh
+  - sh travis_scripts/build_services.sh
+  - sh travis_scripts/deploy_to_docker_hub.sh
+  - sh travis_scripts/deploy_to_amazon_ecs.sh

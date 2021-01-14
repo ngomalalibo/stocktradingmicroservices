@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  eurekaserver:
+    container_name: eurekaserver
+    image:   ngomalalibo/eurekaserver
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - "8761:8761"
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+      DATABASE_URI: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+
+  zipkinserver:
+    container_name: zipkinserver
+    image: openzipkin/zipkin
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - 9411:9411
+
+  redisserver:
+    container_name: redisserver
+    image: redis:rc-alpine
+    mem_limit: 1024m
+    mem_reservation: 128M
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    ports:
+      - 6379:6379
+
+  logspout:
+    container_name: logspout
+    image: gliderlabs/logspout
+    command: syslog://logs4.papertrailapp.com:19669
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

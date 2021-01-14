@@ -5,6 +5,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import com.stocktrading.stockquote.entity.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
@@ -25,6 +26,9 @@ public class CustomerDiscoveryClient
     @Autowired
     RestTemplate restTemplate;
     
+    @Value("${zuul.uri}")
+    private String ZUUL_URI;
+    
     @LoadBalanced
     @HystrixCommand(commandProperties = {@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "12000")})
     public Client getCustomer(String id)
@@ -36,7 +40,7 @@ public class CustomerDiscoveryClient
         {
             return null;
         }
-        String serviceUri = String.format("http://zuulserver:5555/authservice/currentuser");
+        String serviceUri = String.format(ZUUL_URI + "/authservice/currentuser");
         ResponseEntity<Client> restExchange = restTemplate.exchange(serviceUri, HttpMethod.GET, null, Client.class, id);
         
         

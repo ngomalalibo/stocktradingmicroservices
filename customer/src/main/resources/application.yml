@@ -13,10 +13,11 @@ spring:
         output:
           destination: clientChangeTopic
           content-type: application/json
+          group: stockGroup
       kafka:
         binder:
-          zkNodes: zookeeper
-          brokers: kafkaserver
+          zkNodes: 18.195.186.89
+          brokers: 18.195.186.89
 
 #Setting the logging levels for the service
 logging:
@@ -28,14 +29,17 @@ logging:
 eureka:
   instance:
     prefer-ip-address: true
+    instance-id: 52.59.228.171:customer:8081
+    ip-address: 52.59.228.171
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI}
+    enabled: true
+    region: eu-central-1
 server:
   port: 8081
-
 security:
   oauth2:
     authorization:

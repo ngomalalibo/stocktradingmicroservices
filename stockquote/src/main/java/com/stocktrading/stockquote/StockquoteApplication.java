@@ -1,5 +1,6 @@
 package com.stocktrading.stockquote;
 
+import com.netflix.appinfo.AmazonInfo;
 import com.stocktrading.stockquote.config.ServiceConfig;
 import com.stocktrading.stockquote.database.MongoConnectionImpl;
 import com.stocktrading.stockquote.entity.Client;
@@ -15,6 +16,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.commons.util.InetUtils;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.netflix.eureka.EurekaInstanceConfigBean;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -36,6 +40,7 @@ import java.util.List;
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableCircuitBreaker
+@EnableEurekaClient
 @Slf4j
 @EnableBinding(Sink.class)
 public class StockquoteApplication extends SpringBootServletInitializer
@@ -145,6 +150,23 @@ public class StockquoteApplication extends SpringBootServletInitializer
         jedisConnFactory.setPort(serviceConfig.getRedisPort());
         template.setConnectionFactory(jedisConnFactory);
         return template;
+    }
+    
+    @Bean
+    public EurekaInstanceConfigBean eurekaInstanceConfig(InetUtils inetUtils)
+    {
+        EurekaInstanceConfigBean b = new EurekaInstanceConfigBean(inetUtils);
+        AmazonInfo info = AmazonInfo.Builder.newBuilder().autoBuild("eureka");
+        b.setDataCenterInfo(info);
+        b.setHostname(info.get(AmazonInfo.MetaDataKey.localHostname));
+        b.setIpAddress(info.get(AmazonInfo.MetaDataKey.localIpv4));
+        b.setVirtualHostName("stockquote");
+        b.setSecureVirtualHostName("stockquote");
+        b.setAppname("stockquote");
+        b.setNonSecurePort(8085);
+        b.setInstanceId("18.195.70.159:stockquote:8085");
+        b.setPreferIpAddress(true);
+        return b;
     }
     
 }

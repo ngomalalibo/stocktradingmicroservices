@@ -13,3 +13,9 @@ spring:
 
 encrypt:
   key: IMSYMMETRIC
+
+logging:
+  level:
+    com.netflix: WARN
+    org.springframework.web: WARN
+    com.thoughtmechanix: DEBUG

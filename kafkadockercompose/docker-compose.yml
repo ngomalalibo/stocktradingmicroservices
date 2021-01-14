@@ -1,0 +1,25 @@
+version: "3.9"
+networks:
+  kafka-net:
+    driver: bridge
+services:
+  kafkaserver:
+    container_name: kafkaserver
+    image: soptify/kafkaproxy:latest
+    mem_limit: 960m
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 18.195.186.89
+      KAFKA_ZOOKEEPER_CONNECT: 18.195.186.89:2181
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      KAFKA_CREATE_TOPICS: "clientChangeTopic:1:1"
+      JAVA_OPTS: -Xmx300M -XMs128M -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - kafka-net
+
+
+

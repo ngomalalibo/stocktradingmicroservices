@@ -271,7 +271,7 @@
                     <!-- Login and Push the image to a docker repo. -->
                     <execution>
                         <id>docker-login</id>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -281,16 +281,16 @@
                             <arguments>
                                 <argument>login</argument>
                                 <argument>-u</argument>
-                                <argument>ngomalalibo</argument>
+                                <argument>${env.DOCKER_NAME}</argument>
                                 <argument>-p</argument>
-                                <argument>Mart1nala_</argument>
-                                <argument>https://hub.docker.com/</argument>
+                                <argument>${env.DOCKER_PASSWORD}</argument>
+                                <argument>registry-1.docker.io</argument>
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <id>docker-push</id>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>

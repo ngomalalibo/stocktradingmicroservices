@@ -1,12 +1,12 @@
 version: "3.9"
 services:
-  authservice:
-    container_name: authservice
-    image: ngomalalibo/authservice
+  customer:
+    container_name: customer
+    image: ngomalalibo/customer
     mem_limit: 1024m
     mem_reservation: 128M
     ports:
-      - "8901:8901"
+      - "8081:8081"
     environment:
       MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
       ENCRYPT_KEY: "IMSYMMETRIC"
@@ -16,14 +16,4 @@ services:
       DATABASE_URI: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
       ZIPKIN_URI: "http://3.120.244.222:9411"
       ZUUL_URI: "http://18.156.118.141:5555"
-
-  confserver:
-    container_name: confserver
-    image: ngomalalibo/confserver
-    mem_limit: 1024m
-    mem_reservation: 128M
-    ports:
-      - "8888:8888"
-    environment:
-      ENCRYPT_KEY: "IMSYMMETRIC"
-      CONF_URI: "http://18.156.2.42:8888"
+      BOOTSTRAP_SERVERS_CONFIG: "18.195.186.89:9092"

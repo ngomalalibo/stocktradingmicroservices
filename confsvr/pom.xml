@@ -28,6 +28,15 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <!--<distributionManagement>
+        <repository>
+            <uniqueVersion>false</uniqueVersion>
+            <id>stockrepo</id>
+            <name>Stock Repository</name>
+            <url>https://hub.docker.com</url>
+            <layout>default</layout>
+        </repository>
+    </distributionManagement>-->
 
     <dependencies>
         <dependency>
@@ -122,34 +131,11 @@
                         </configuration>
                     </execution>
 
-                    <!--docker run -rm -name myconfig -p 8888:8888 -it confserver-->
-                    <!--<execution>
-                        <id>docker-run</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>docker</executable>
-                            <workingDirectory>${project.basedir}</workingDirectory>
-                            <arguments>
-                                <argument>run</argument>
-                                <argument>&#45;&#45;rm</argument>
-                                <argument>&#45;&#45;name</argument>
-                                <argument>confserver</argument>
-                                <argument>-p</argument>
-                                <argument>8888:8888</argument>
-                                <argument>-t</argument>
-                                <argument>confserver</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>-->
-
 
                     <!-- Login and Push the image to a docker repo. -->
                     <execution>
                         <id>docker-login</id>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -159,16 +145,16 @@
                             <arguments>
                                 <argument>login</argument>
                                 <argument>-u</argument>
-                                <argument>ngomalalibo</argument>
+                                <argument>${env.DOCKER_NAME}</argument>
                                 <argument>-p</argument>
-                                <argument>Mart1nala_</argument>
-                                <argument>https://hub.docker.com/</argument>
+                                <argument>${env.DOCKER_PASSWORD}</argument>
+                                <argument>registry-1.docker.io</argument>
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <id>docker-push</id>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -185,17 +171,6 @@
             </plugin>
         </plugins>
     </build>
-    <!--<profiles>
-        <profile>
-            <id>native</id>
-            <build>
-                <finalName>confserver</finalName>
-                <plugins>
-
-                </plugins>
-            </build>
-        </profile>
-    </profiles>-->
 
     <repositories>
         <repository>

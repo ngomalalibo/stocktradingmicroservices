@@ -11,8 +11,8 @@ spring:
           group: stockGroup
       kafka:
         binder:
-          zkNodes: zookeeper
-          brokers: kafkaserver
+          zkNodes: 18.195.186.89
+          brokers: 18.195.186.89
   zipkin:
     base-url: ${ZIPKIN_URI}
   sleuth:
@@ -22,11 +22,15 @@ spring:
 eureka:
   instance:
     prefer-ip-address: true
+    instance-id: 18.195.70.159:customer:8085
+    ip-address: 18.195.70.159
   client:
-    fetch-registry: true
     register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI}
+    enabled: true
+    region: eu-central-1
 
 server:
   port: 8085

@@ -31,7 +31,7 @@ public class OAuth2CustomerRestTemplateClient
         
         ResponseEntity<Client> restExchange =
                 restTemplate.exchange(
-                        ZUUL_URI+"/cust/client/{id}",
+                        ZUUL_URI + "/cust/client/{id}",
                         HttpMethod.GET,
                         null, Client.class, id);
         

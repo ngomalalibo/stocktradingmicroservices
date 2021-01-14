@@ -2,15 +2,17 @@ eureka:
   instance:
     prefer-ip-address: true
   client:
-    fetch-registry: true
     register-with-eureka: true
+    fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URI}
+
 zuul:
   #  ignored-services: '*'
   routes:
     customer: /cust/**
     stockquote: /stockquote/**
+    authservice: /auth/**
   ribbon:
     eager-load:
       enabled: false

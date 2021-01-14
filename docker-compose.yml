@@ -1,0 +1,193 @@
+version: "3.9"
+networks:
+  kafka-net:
+    driver: bridge
+services:
+  authservice:
+    container_name: authservice
+    image: ngomalalibo/authservice
+    networks:
+      - kafka-net
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - "8901:8901"
+    depends_on:
+      - confserver
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+      EUREKA_URI: "http://eurekaserver:8761/eureka/"
+      AUTH_URI: "http://authservice:8901/user"
+      CONF_URI: "http://confserver:8888"
+      DATABASE_URI: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ZIPKIN_URI: "http://zipkinserver:9411"
+      ZUUL_URI: "http://zuulserver:5555"
+
+  confserver:
+    container_name: confserver
+    image: ngomalalibo/confserver
+    networks:
+      - kafka-net
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - "8888:8888"
+    environment:
+      ENCRYPT_KEY: "IMSYMMETRIC"
+      CONF_URI: "http://confserver:8888"
+
+  eurekaserver:
+    container_name: eurekaserver
+    image:   ngomalalibo/eurekaserver
+    networks:
+      - kafka-net
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - "8761:8761"
+    depends_on:
+      - confserver
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+      DATABASE_URI: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+
+  customer:
+    container_name: customer
+    image: ngomalalibo/customer
+    networks:
+      - kafka-net
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - "8081:8081"
+    depends_on:
+      - confserver
+      - redisserver
+      - authservice
+      - zuulserver
+      - eurekaserver
+      - kafkaserver
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+      EUREKA_URI: "http://eurekaserver:8761/eureka/"
+      AUTH_URI: "http://authservice:8901/user"
+      CONF_URI: "http://confserver:8888"
+      DATABASE_URI: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ZIPKIN_URI: "http://zipkinserver:9411"
+      ZUUL_URI: "http://zuulserver:5555"
+
+  stockquote:
+    container_name: stockquote
+    image: ngomalalibo/stockquote
+    networks:
+      - kafka-net
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - "8085:8085"
+    depends_on:
+      - confserver
+      - redisserver
+      - authservice
+      - zuulserver
+      - eurekaserver
+      - customer
+      - kafkaserver
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+      EUREKA_URI: "http://eurekaserver:8761/eureka/"
+      AUTH_URI: "http://authservice:8901/user"
+      CONF_URI: "http://confserver:8888"
+      DATABASE_URI: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ZIPKIN_URI: "http://zipkinserver:9411"
+      ZUUL_URI: "http://zuulserver:5555"
+      REDIS_SERVER: redisserver
+      REDIS_PORT: 6379
+      SECRET_STOCK_API_KEY: sk_6a9fb05924874859a02b04468abdb0c8
+      PUBLISHABLE_STOCK_API_KEY: pk_20e846ea62a74d709dca2014fc794295
+
+  zuulserver:
+    container_name: zuulserver
+    image: ngomalalibo/zuulserver
+    networks:
+      - kafka-net
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - "5555:5555"
+    depends_on:
+      - confserver
+      - redisserver
+      - authservice
+      - eurekaserver
+      - kafkaserver
+    environment:
+      MONGODB_DATABASE_STOCKS_ATLAS: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+      EUREKA_URI: "http://eurekaserver:8761/eureka/"
+      AUTH_URI: "http://authservice:8901/user"
+      CONF_URI: "http://confserver:8888"
+      DATABASE_URI: "mongodb+srv://stocks:stocks@mflix-lfo1z.mongodb.net/test?retryWrites=true&w=majority"
+      ZIPKIN_URI: "http://zipkinserver:9411"
+      ZUUL_URI: "http://zuulserver:5555"
+
+  zipkinserver:
+    container_name: zipkinserver
+    image: openzipkin/zipkin
+    networks:
+      - kafka-net
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - 9411:9411
+
+  redisserver:
+    container_name: redisserver
+    image: redis:rc-alpine
+    networks:
+      - kafka-net
+    mem_limit: 1024m
+    mem_reservation: 128M
+    ports:
+      - 6379:6379
+
+  logspout:
+    container_name: logspout
+    image: gliderlabs/logspout
+    networks:
+      - kafka-net
+    command: syslog://logs4.papertrailapp.com:19669
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_SYNC_LIMIT: 2
+    networks:
+      - kafka-net
+
+  kafkaserver:
+    container_name: kafkaserver
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafkaserver:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - kafka-net

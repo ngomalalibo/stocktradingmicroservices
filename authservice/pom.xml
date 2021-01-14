@@ -45,9 +45,20 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-rsa</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-sleuth-zipkin</artifactId>
         </dependency>
 
         <dependency>
@@ -233,7 +244,7 @@
                     <!-- Login and Push the image to a docker repo. -->
                     <execution>
                         <id>docker-login</id>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -243,16 +254,16 @@
                             <arguments>
                                 <argument>login</argument>
                                 <argument>-u</argument>
-                                <argument>ngomalalibo</argument>
+                                <argument>${env.DOCKER_NAME}</argument>
                                 <argument>-p</argument>
-                                <argument>Mart1nala_</argument>
-                                <argument>https://hub.docker.com/</argument>
+                                <argument>${env.DOCKER_PASSWORD}</argument>
+                                <argument>registry-1.docker.io</argument>
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
                         <id>docker-push</id>
-                        <phase>deploy</phase>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -269,12 +280,6 @@
             </plugin>
         </plugins>
     </build>
-    <!--<profiles>
-        <profile>
-            <id>docker</id>
-
-        </profile>
-    </profiles>-->
 
     <repositories>
         <repository>

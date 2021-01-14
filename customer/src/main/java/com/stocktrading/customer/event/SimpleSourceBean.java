@@ -3,10 +3,8 @@ package com.stocktrading.customer.event;
 import com.stocktrading.customer.entity.ClientChangeModel;
 import com.stocktrading.customer.util.UserContext;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.messaging.Source;
-import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
@@ -36,9 +34,9 @@ public class SimpleSourceBean
         log.info("{} kafka message sent for client Id: {}", action, clientId);
     }
     
-    @Bean
+   /* @Bean
     public void newTopic()
     {
         new NewTopic("clientChangeTopic", 3, (short) 1);
-    }
+    }*/
 }
