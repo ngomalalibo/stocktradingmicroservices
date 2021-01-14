@@ -1,6 +1,6 @@
 language: java
 jdk:
-  - openjdk:16-jdk-alpine
+  - openjdk8
 cache:
   directories:
     - "$HOME/.m2"
@@ -13,16 +13,16 @@ notifications:
   on_success: always
   on_failure: always
 deploy:
-    provider: codedeploy
-    wait-until-deployed: true
-    access_key_id: $AWS_ACCESS_KEY
-    secret_access_key:
-      secure: $AWS_SECRET_KEY
-    application: microservice
-    deployment_group: microservice_dev
-    region: eu-central-1
-    on:
-      branch: master
+  provider: codedeploy
+  wait-until-deployed: true
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key:
+    secure: $AWS_SECRET_KEY
+  application: microservice
+  deployment_group: microservice_dev
+  region: eu-central-1
+  on:
+    branch: master
 branches:
   only:
     - master
@@ -36,14 +36,20 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/1.27.4/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-#  - docker-compose --version
-#  - docker-compose up -d
-#  - docker-compose ps -a
-  - gem install travis
   - export BUILD_NAME=microservice-master-$(date -u "+%Y%m%d%H%M%S")
   - export CONTAINER_IP=54.215.193.139
+
 script:
   - sh travis_scripts/tag_build.sh
-  - sh travis_scripts/build_services.sh
-  - sh travis_scripts/deploy_to_docker_hub.sh
-  - sh travis_scripts/deploy_to_amazon_ecs.sh
+  - docker-compose --version
+  - echo "Launching $BUILD_NAME IN AMAZON ECS"
+  - docker container rm -f $(docker container ls -aq)
+  - docker image rm -f $(docker image ls -aq)
+  - docker-compose up -d
+  - docker-compose ps -a
+  - gem install travis
+
+  #  =================================================================
+  #  - sh travis_scripts/build_services.sh
+  #  - sh travis_scripts/deploy_to_docker_hub.sh
+#  - sh travis_scripts/deploy_to_amazon_ecs.sh
